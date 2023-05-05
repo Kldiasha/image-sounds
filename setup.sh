@@ -6,6 +6,7 @@
 
 mkdir videos
 
+# Download all the youtube videos
 export LC_ALL=en_US.UTF-8
 cat $1 |
 while read in; do
@@ -16,7 +17,14 @@ while read in; do
     if test -f "$path"; then
         echo "$title already downloaded."
     else
-        echo "Dowloading $title."
+        echo "Downloading $title."
         yt-dlp --output $path $in
     fi
 done
+
+# Generate datapoints for frame to second mathching.
+
+mkdir data
+
+# So far only generates frames:
+/usr/bin/python3 generate_data.py
