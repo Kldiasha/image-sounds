@@ -2,7 +2,9 @@ import os
 import numpy as np
 import cv2
 from datetime import timedelta
+from moviepy.editor import VideoFileClip
 
+# Inspired by https://www.thepythoncode.com/article/extract-frames-from-videos-in-python.
 
 def format_timedelta(td):
     """Utility function to format timedelta objects in a cool way (e.g 00:00:20.05) 
@@ -75,6 +77,33 @@ def generate_frames(video_file):
         # increment the frame count
         count += 1
 
+AUDIO_CLIP_HALF_LENGTH = 2
+
+def generate_audio(video_file):
+    filename, _ = os.path.splitext(video_file)
+    filename = './data/' + os.path.basename(filename) + "-audio"
+    # make a folder by the name of the video file
+    print(filename)
+    if not os.path.isdir(filename):
+        os.mkdir(filename)
+    else:
+        print("Audio file have been generated. Moving to next file.")
+        return
+    # read the video file    
+    video = VideoFileClip(video_file)
+    duration = int(video.duration)
+
+    for time_stamp in range(AUDIO_CLIP_HALF_LENGTH, duration - AUDIO_CLIP_HALF_LENGTH):
+        # get intervals
+        start = time_stamp - AUDIO_CLIP_HALF_LENGTH
+        end = time_stamp + AUDIO_CLIP_HALF_LENGTH
+        # clip the audio
+        clip = video.subclip(start, end)
+        time_stamp_formatted = format_timedelta(timedelta(seconds=time_stamp))
+        name = os.path.join(filename, f"audio{time_stamp_formatted}.wav")
+        # store the audio file
+        clip.audio.write_audiofile(name)
+
 import sys
 dir_list = os.listdir('./videos')
 for video_file in dir_list:
@@ -82,3 +111,4 @@ for video_file in dir_list:
         continue
     print(f"Generating frames from {video_file}.")
     generate_frames('./videos/' + video_file)
+    generate_audio('./videos/' + video_file)
