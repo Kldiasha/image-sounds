@@ -11,12 +11,10 @@ def format_timedelta(td):
     omitting microseconds and retaining milliseconds"""
     result = str(td)
     try:
-        result, ms = result.split(".")
+        result, _ = result.split(".")
     except ValueError:
         return (result + ".00").replace(":", "-")
-    ms = int(ms)
-    ms = round(ms / 1e4)
-    return f"{result}.{ms:02}".replace(":", "-")
+    return f"{result}".replace(":", "-")
 
 
 def get_saving_frames_durations(cap, saving_fps):
